@@ -1,93 +1,168 @@
 # ==========================================================
-# ZeusShopBot
+# ZeusShopBot PRO
 # modules/users.py
 # ==========================================================
 
-from modules.database import db
+import sqlite3
 
 
-class UserManager:
+DB_NAME = "zeus.db"
 
-    def create_table(self):
 
-        conn = db.connect()
-        cursor = conn.cursor()
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            telegram_id INTEGER UNIQUE,
-            username TEXT,
-            first_name TEXT,
-            balance INTEGER DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-        """)
+# ==========================================================
+# Database Connection
+# ==========================================================
 
-        db.commit()
+def get_db():
+
+    return sqlite3.connect(DB_NAME)
+
+
+
+# ==========================================================
+# Create Tables
+# ==========================================================
+
+def init_db():
+
+    db = get_db()
+
+    cursor = db.cursor()
+
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        telegram_id INTEGER UNIQUE,
+
+        username TEXT,
+
+        first_name TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+    db.commit()
+
+    db.close()
+
+
+
+
+
+# ==========================================================
+# Users Manager
+# ==========================================================
+
+class Users:
+
+
+    def __init__(self):
+
+        init_db()
+
+
+
+    # ==========================
+    # Add User
+    # ==========================
 
     def add_user(
+
         self,
+
         telegram_id,
-        username,
-        first_name
+
+        username=None,
+
+        first_name=None
+
     ):
 
-        conn = db.connect()
-        cursor = conn.cursor()
+
+        db = get_db()
+
+        cursor = db.cursor()
+
+
 
         cursor.execute("""
+
         INSERT OR IGNORE INTO users
+
         (
-            telegram_id,
-            username,
-            first_name
+
+        telegram_id,
+
+        username,
+
+        first_name
+
         )
-        VALUES (?, ?, ?)
-        """, (
-            telegram_id,
-            username,
-            first_name
+
+        VALUES (?,?,?)
+
+        """,
+
+        (
+
+        telegram_id,
+
+        username,
+
+        first_name
+
         ))
+
+
 
         db.commit()
 
-    def get_user(
-        self,
-        telegram_id
-    ):
+        db.close()
 
-        conn = db.connect()
-        cursor = conn.cursor()
 
-        cursor.execute(
-            "SELECT * FROM users WHERE telegram_id=?",
-            (telegram_id,)
-        )
 
-        return cursor.fetchone()
 
-    def get_all_users(self):
 
-        conn = db.connect()
-        cursor = conn.cursor()
+    # ==========================
+    # Get Users
+    # ==========================
+
+    def get_users(self):
+
+
+        db = get_db()
+
+        cursor = db.cursor()
+
 
         cursor.execute(
+
             "SELECT * FROM users"
+
         )
 
-        return cursor.fetchall()
 
-    def count_users(self):
-
-        conn = db.connect()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "SELECT COUNT(*) FROM users"
-        )
-
-        return cursor.fetchone()[0]
+        users = cursor.fetchall()
 
 
-users = UserManager()
+        db.close()
+
+
+        return users
+
+
+
+
+
+# ==========================================================
+# Export
+# ==========================================================
+
+users = Users()
