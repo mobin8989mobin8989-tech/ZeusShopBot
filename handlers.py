@@ -37,17 +37,33 @@ from modules.keyboards import (
 
 from modules.users import users
 
-
 from modules.panel import Panel
 
 
+# ==========================================================
+# Panel Connection (Safe)
+# ==========================================================
+
+_panel = None
+
+
+def get_panel():
+
+    global _panel
+
+    if _panel is None:
+
+        _panel = Panel()
+
+    return _panel
+
+
 
 # ==========================================================
-# 3X-UI Connection
+# Orders Storage
 # ==========================================================
 
-
-panel = Panel()
+ORDERS = {}
 
 
 
@@ -96,7 +112,7 @@ WELCOME_TEXT = f"""
 
 
 # ==========================================================
-# Start
+# Start Command
 # ==========================================================
 
 
@@ -110,6 +126,7 @@ async def start(
 
 
     user = update.effective_user
+
 
 
     users.add_user(
@@ -132,22 +149,15 @@ async def start(
 
     )
     # ==========================================================
-# Zeus Shop VPN PRO
-# handlers.py
-# Part 2
 # Buy System
+# Part 2
 # ==========================================================
 
-
-
-# ==========================================================
-# Buy Service Menu
-# ==========================================================
 
 
 BUY_TEXT = """
 
-🛒 خرید اشتراک Zeus Shop VPN
+🛒 خرید سرویس Zeus Shop VPN
 
 
 ━━━━━━━━━━━━━━━━━━
@@ -188,10 +198,8 @@ BUY_TEXT = """
 
 
 
-
-
 # ==========================================================
-# Buy Service
+# Buy Service Menu
 # ==========================================================
 
 
@@ -223,8 +231,6 @@ async def buy_service(
 
 
 
-
-
 # ==========================================================
 # Select Plan
 # ==========================================================
@@ -250,13 +256,9 @@ async def select_plan(
 
 
 
-
     if plan_key not in PLANS:
 
-
         return
-
-
 
 
 
@@ -264,12 +266,9 @@ async def select_plan(
 
 
 
-
-
-
-    # ==============================
+    # ==========================
     # Custom Volume
-    # ==============================
+    # ==========================
 
 
     if plan_key == "custom":
@@ -289,7 +288,7 @@ async def select_plan(
 ━━━━━━━━━━━━━━━━━━
 
 
-حجم موردنظر خود را وارد کنید.
+حجم موردنظر را به گیگ وارد کنید.
 
 
 💰 قیمت هر گیگ:
@@ -313,13 +312,9 @@ async def select_plan(
 
 
 
-
-
-
-    # ==============================
+    # ==========================
     # Save Order
-    # ==============================
-
+    # ==========================
 
 
     context.user_data["order"] = {
@@ -327,17 +322,20 @@ async def select_plan(
 
         "name": plan["name"],
 
+
         "traffic": plan["traffic"],
+
 
         "traffic_gb": plan.get("gb",0),
 
+
         "days": plan["days"],
+
 
         "price": plan["price"]
 
+
     }
-
-
 
 
 
@@ -378,7 +376,6 @@ async def select_plan(
 
 
 
-
     await query.edit_message_text(
 
 
@@ -390,7 +387,7 @@ async def select_plan(
 ━━━━━━━━━━━━━━━━━━
 
 
-📦 نام:
+📦 سرویس:
 
 {plan["name"]}
 
@@ -433,9 +430,8 @@ async def select_plan(
 
 
 
-
 # ==========================================================
-# Custom Volume Handler
+# Custom Volume Input
 # ==========================================================
 
 
@@ -454,7 +450,6 @@ async def custom_volume(
 
     ):
 
-
         return
 
 
@@ -462,13 +457,10 @@ async def custom_volume(
 
     try:
 
-
         gb = int(update.message.text)
 
 
-
     except:
-
 
 
         await update.message.reply_text(
@@ -498,11 +490,7 @@ async def custom_volume(
 
 
 
-
-
     price = gb * PRICE_PER_GB
-
-
 
 
 
@@ -529,7 +517,6 @@ async def custom_volume(
 
 
     }
-
 
 
 
@@ -576,7 +563,6 @@ async def custom_volume(
     await update.message.reply_text(
 
 
-
         f"""
 
 ✅ حجم ثبت شد
@@ -614,12 +600,10 @@ async def custom_volume(
 
         reply_markup=keyboard
 
-    )
+        )
     # ==========================================================
-# Zeus Shop VPN PRO
-# handlers.py
-# Part 3
 # Payment System
+# Part 3
 # ==========================================================
 
 
@@ -652,14 +636,21 @@ async def payment(
     if not order:
 
 
-
         await query.edit_message_text(
 
-            "❌ سفارش پیدا نشد. دوباره اقدام کنید."
+            "❌ سفارش پیدا نشد. دوباره خرید کنید."
 
         )
 
         return
+
+
+
+
+
+    # ذخیره سفارش برای تایید ادمین
+
+    ORDERS[query.from_user.id] = order
 
 
 
@@ -775,7 +766,6 @@ async def payment(
 
 
 
-
     await query.edit_message_text(
 
         text,
@@ -785,7 +775,6 @@ async def payment(
         reply_markup=keyboard
 
     )
-
 
 
 
@@ -814,6 +803,10 @@ async def send_receipt(
 
 
 
+    context.user_data["waiting_receipt"] = True
+
+
+
     await query.message.reply_text(
 
         """
@@ -821,13 +814,12 @@ async def send_receipt(
 📷 لطفاً تصویر رسید پرداخت را ارسال کنید.
 
 
-پس از تایید مدیریت، سرویس شما ساخته می‌شود.
+⏳ بعد از تایید مدیریت، سرویس ساخته می‌شود.
 
 
 """
 
     )
-
 
 
 
@@ -849,15 +841,17 @@ async def receipt_handler(
 ):
 
 
+    user_id = update.effective_user.id
+
+
+
     if not context.user_data.get(
 
         "waiting_receipt"
 
     ):
 
-
         return
-
 
 
 
@@ -868,7 +862,7 @@ async def receipt_handler(
 
         await update.message.reply_text(
 
-            "❌ لطفاً فقط تصویر رسید ارسال کنید."
+            "❌ لطفاً فقط عکس رسید ارسال کنید."
 
         )
 
@@ -878,12 +872,7 @@ async def receipt_handler(
 
 
 
-
     photo_id = update.message.photo[-1].file_id
-
-
-
-    context.user_data["receipt"] = photo_id
 
 
 
@@ -891,12 +880,9 @@ async def receipt_handler(
 
 
 
+    order = ORDERS.get(
 
-
-
-    order = context.user_data.get(
-
-        "order",
+        user_id,
 
         {}
 
@@ -916,7 +902,7 @@ async def receipt_handler(
 
                     "✅ تایید و ساخت سرویس",
 
-                    callback_data=f"approve_{update.effective_user.id}"
+                    callback_data=f"approve_{user_id}"
 
                 )
 
@@ -929,7 +915,7 @@ async def receipt_handler(
 
                     "❌ رد پرداخت",
 
-                    callback_data=f"reject_{update.effective_user.id}"
+                    callback_data=f"reject_{user_id}"
 
                 )
 
@@ -949,7 +935,7 @@ async def receipt_handler(
 
         """
 
-✅ رسید شما دریافت شد.
+✅ رسید دریافت شد.
 
 
 ⏳ منتظر تایید مدیریت باشید.
@@ -971,7 +957,6 @@ async def receipt_handler(
 
         photo=photo_id,
 
-
         caption=f"""
 
 💳 پرداخت جدید Zeus Shop
@@ -988,52 +973,49 @@ async def receipt_handler(
 
 🆔 آیدی:
 
-{update.effective_user.id}
+{user_id}
 
 
 
 📦 سرویس:
 
-{order.get("name")}
+{order.get("name","نامشخص")}
 
 
 
 🌐 حجم:
 
-{order.get("traffic")}
+{order.get("traffic","نامشخص")}
 
 
 
 📅 مدت:
 
-{order.get("days")} روز
+{order.get("days","نامشخص")} روز
 
 
 
 💰 مبلغ:
 
-{order.get("price"):,} تومان
+{order.get("price",0):,} تومان
 
 
 
 ━━━━━━━━━━━━━━
 
 
-منتظر بررسی ادمین
+منتظر تایید ادمین
+
 
 """,
-
 
         reply_markup=keyboard
 
     )
     # ==========================================================
-# Zeus Shop VPN PRO
-# handlers.py
-# Part 4
 # Admin Payment System
+# Part 4
 # ==========================================================
-
 
 
 
@@ -1058,6 +1040,14 @@ async def approve_payment(
 
 
 
+    if query.from_user.id != ADMIN_ID:
+
+        return
+
+
+
+
+
     user_id = int(
 
         query.data.split("_")[1]
@@ -1068,68 +1058,56 @@ async def approve_payment(
 
 
 
+    order = ORDERS.get(
+
+        user_id
+
+    )
+
+
+
+
+
+    if not order:
+
+
+        await query.message.reply_text(
+
+            "❌ سفارش پیدا نشد."
+
+        )
+
+        return
+
+
+
+
+
+
     try:
 
 
-
-        order = context.user_data.get(
-
-            "order"
-
-        )
+        vpn_panel = get_panel()
 
 
 
-        if not order:
-
-
-            raise Exception(
-
-                "اطلاعات سفارش پیدا نشد"
-
-            )
-
-
-
-
-
-
-
-        # ==================================
-        # ساخت سرویس در 3X-UI
-        # ==================================
-
-
-        service = panel.create_service(
-
+        service = vpn_panel.create_service(
 
             telegram_id=user_id,
 
+            days=order["days"],
 
-            traffic_gb=order["traffic_gb"],
-
-
-            days=order["days"]
-
+            traffic_gb=order["traffic_gb"]
 
         )
 
 
 
-
-
-
-
-        # ==================================
-        # ارسال اطلاعات به مشتری
-        # ==================================
 
 
         await context.bot.send_message(
 
-
             chat_id=user_id,
-
 
             text=f"""
 
@@ -1142,156 +1120,13 @@ async def approve_payment(
 ✅ سرویس شما ساخته شد
 
 
-
 👤 نام کاربری:
 
 {service.get("username","")}
-
-
-
-🔗 لینک اتصال:
-
-{service.get("subscription_url","")}
-
-
-
-━━━━━━━━━━━━━━━━━━
-
-
-🚀 Zeus Shop VPN
-
-
-ممنون از اعتماد شما ❤️
-
-
-"""
-
-        )
-
-
-
-
-
-
-
-        await query.edit_message_caption(
-
-
-            caption=
-
-            "✅ پرداخت تایید شد\n\n"
-
-            "🚀 سرویس با موفقیت ساخته شد."
-
-        )
-
-
-
-
-
-
-    except Exception as e:
-
-
-
-        await query.message.reply_text(
-
-
-            f"""
-
-❌ خطا در ساخت سرویس
-
-
-{e}
-
-
-"""
-
-        )
-
-
-
-
-
-
-
-
-
-# ==========================================================
-# Reject Payment
-# ==========================================================
-
-
-async def reject_payment(
-
-    update: Update,
-
-    context: ContextTypes.DEFAULT_TYPE
-
-):
-
-
-    query = update.callback_query
-
-
-    await query.answer()
-
-
-
-
-
-    user_id = int(
-
-        query.data.split("_")[1]
-
-    )
-
-
-
-
-
-
-    await context.bot.send_message(
-
-
-        chat_id=user_id,
-
-
-        text="""
-
-❌ پرداخت شما تایید نشد.
-
-
-اگر فکر می‌کنید اشتباهی رخ داده است،
-
-با پشتیبانی تماس بگیرید.
-
-
-"""
-
-    )
-
-
-
-
-
-
-
-    await query.edit_message_caption(
-
-
-        caption=
-
-        "❌ پرداخت رد شد."
-
-        )
-    # ==========================================================
-# Zeus Shop VPN PRO
-# handlers.py
+        # ==========================================================
+# User Profile System
 # Part 5
-# User Profile + Services
 # ==========================================================
-
 
 
 
@@ -1317,8 +1152,6 @@ async def profile(
 
 
     user = query.from_user
-
-
 
 
 
@@ -1450,12 +1283,14 @@ async def my_services(
 
 
 
-
-
     try:
 
 
-        services = panel.get_user_services(
+        vpn_panel = get_panel()
+
+
+
+        services = vpn_panel.get_user_services(
 
             query.from_user.id
 
@@ -1463,7 +1298,6 @@ async def my_services(
 
 
     except Exception:
-
 
 
         services = []
@@ -1474,24 +1308,20 @@ async def my_services(
 
 
 
-
     if not services:
-
 
 
         await query.edit_message_text(
 
-
             """
 
-❌ شما هنوز هیچ سرویسی ندارید.
+❌ شما هنوز سرویسی ندارید.
 
 
 برای خرید سرویس از منوی خرید استفاده کنید.
 
 
 """,
-
 
             reply_markup=InlineKeyboardMarkup(
 
@@ -1508,7 +1338,6 @@ async def my_services(
                         )
 
                     ],
-
 
                     [
 
@@ -1538,8 +1367,6 @@ async def my_services(
 
 
 
-
-
     text = """
 
 🌍 سرویس‌های من
@@ -1554,35 +1381,26 @@ async def my_services(
 
 
 
-
-
     for service in services:
-
 
 
         text += f"""
 
 👤 نام:
 
-{service.get("username","نامشخص")}
+{service.get("email","نامشخص")}
 
 
 
 📊 حجم:
 
-{service.get("traffic","نامشخص")}
+{service.get("totalGB","نامشخص")}
 
 
 
-📅 انقضا:
+⏳ وضعیت:
 
-{service.get("expire","نامشخص")}
-
-
-
-🔗 لینک:
-
-{service.get("subscription_url","ندارد")}
+فعال ✅
 
 
 
@@ -1590,8 +1408,6 @@ async def my_services(
 
 
 """
-
-
 
 
 
@@ -1638,7 +1454,6 @@ async def my_services(
 
 
 
-
     await query.edit_message_text(
 
         text,
@@ -1678,32 +1493,25 @@ async def renew(
 
 
 
-
     await query.edit_message_text(
-
 
         """
 
 🔄 تمدید سرویس
 
 
-پلن موردنظر خود را انتخاب کنید.
+پلن تمدید را انتخاب کنید.
 
 
 """,
 
-
         reply_markup=plans_menu()
 
-    )
-    # ==========================================================
-# Zeus Shop VPN PRO
-# handlers.py
+)
+        # ==========================================================
+# Support / Wallet / Discount
 # Part 6
-# Support + Wallet + Discount
 # ==========================================================
-
-
 
 
 
@@ -1732,10 +1540,7 @@ async def support_menu(
 
 
 
-
-
     await query.edit_message_text(
-
 
         """
 
@@ -1745,17 +1550,16 @@ async def support_menu(
 ━━━━━━━━━━━━━━━━━━
 
 
-پیام خود را ارسال کنید.
+💬 پیام خود را ارسال کنید.
 
 
-پشتیبانی در اولین فرصت پاسخ خواهد داد.
+پشتیبانی در اولین فرصت پاسخ می‌دهد.
 
 
 ━━━━━━━━━━━━━━━━━━
 
 
 """,
-
 
         reply_markup=InlineKeyboardMarkup(
 
@@ -1785,8 +1589,6 @@ async def support_menu(
 
 
 
-
-
 # ==========================================================
 # Receive Support Message
 # ==========================================================
@@ -1807,9 +1609,7 @@ async def support_message(
 
     ):
 
-
         return
-
 
 
 
@@ -1827,16 +1627,14 @@ async def support_message(
 
     await context.bot.send_message(
 
-
         chat_id=ADMIN_ID,
-
 
         text=f"""
 
 📩 تیکت جدید Zeus Shop
 
 
-━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━
 
 
 👤 کاربر:
@@ -1851,7 +1649,7 @@ async def support_message(
 
 
 
-━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━
 
 
 💬 پیام:
@@ -1868,10 +1666,7 @@ async def support_message(
 
 
 
-
-
     await update.message.reply_text(
-
 
         """
 
@@ -1914,10 +1709,7 @@ async def wallet(
 
 
 
-
-
     await query.edit_message_text(
-
 
         """
 
@@ -1927,11 +1719,10 @@ async def wallet(
 ━━━━━━━━━━━━━━━━━━
 
 
-💳 موجودی:
+💳 موجودی فعلی:
 
 
 0 تومان
-
 
 
 ━━━━━━━━━━━━━━━━━━
@@ -1941,7 +1732,6 @@ async def wallet(
 
 
 """,
-
 
         reply_markup=InlineKeyboardMarkup(
 
@@ -1974,7 +1764,7 @@ async def wallet(
 
 
 # ==========================================================
-# Discount
+# Discount Code
 # ==========================================================
 
 
@@ -1994,16 +1784,13 @@ async def discount(
 
 
 
-
     context.user_data["discount"] = True
 
 
 
 
 
-
     await query.edit_message_text(
-
 
         """
 
@@ -2018,6 +1805,7 @@ async def discount(
 
 مثال:
 
+
 ZEUS20
 
 
@@ -2025,7 +1813,6 @@ ZEUS20
 
 
 """,
-
 
         reply_markup=InlineKeyboardMarkup(
 
@@ -2058,7 +1845,7 @@ ZEUS20
 
 
 # ==========================================================
-# Check Discount Code
+# Check Discount
 # ==========================================================
 
 
@@ -2077,7 +1864,6 @@ async def receive_discount(
 
     ):
 
-
         return
 
 
@@ -2088,17 +1874,13 @@ async def receive_discount(
 
 
 
-
-
     code = update.message.text.upper()
 
 
 
 
 
-
     if code == "ZEUS20":
-
 
 
         await update.message.reply_text(
@@ -2120,9 +1902,7 @@ async def receive_discount(
     else:
 
 
-
         await update.message.reply_text(
-
 
             """
 
@@ -2133,19 +1913,14 @@ async def receive_discount(
 
         )
         # ==========================================================
-# Zeus Shop VPN PRO
-# handlers.py
+# Admin Panel System
 # Part 7
-# Admin Panel
 # ==========================================================
 
 
 
-
-
-
 # ==========================================================
-# Admin Panel Command
+# Admin Command
 # ==========================================================
 
 
@@ -2177,9 +1952,7 @@ async def admin_panel(
 
 
 
-
     await update.message.reply_text(
-
 
         """
 
@@ -2189,12 +1962,10 @@ async def admin_panel(
 ━━━━━━━━━━━━━━━━━━
 
 
-به بخش مدیریت خوش آمدید.
+به مدیریت ربات خوش آمدید.
 
 
-"""
-
-,
+""",
 
         reply_markup=admin_menu()
 
@@ -2225,16 +1996,13 @@ async def admin_callback(
     query = update.callback_query
 
 
-
     await query.answer()
 
 
 
     if query.from_user.id != ADMIN_ID:
 
-
         return
-
 
 
 
@@ -2255,24 +2023,20 @@ async def admin_callback(
     if data == "admin_users":
 
 
-
         await query.edit_message_text(
-
 
             """
 
-👥 کاربران
+👥 کاربران Zeus Shop
 
 
 ━━━━━━━━━━━━━━━━━━
 
 
-لیست کاربران در حال دریافت است.
+لیست کاربران در حال توسعه است.
 
 
-"""
-
-,
+""",
 
             reply_markup=admin_menu()
 
@@ -2293,24 +2057,26 @@ async def admin_callback(
     elif data == "admin_orders":
 
 
+        count = len(ORDERS)
+
+
 
         await query.edit_message_text(
 
+            f"""
 
-            """
-
-📦 سفارشات
+📦 سفارش‌های در انتظار
 
 
 ━━━━━━━━━━━━━━━━━━
 
 
-سفارش‌ها در این بخش نمایش داده می‌شوند.
+تعداد سفارش‌ها:
+
+{count}
 
 
-"""
-
-,
+""",
 
             reply_markup=admin_menu()
 
@@ -2331,9 +2097,7 @@ async def admin_callback(
     elif data == "admin_payments":
 
 
-
         await query.edit_message_text(
-
 
             """
 
@@ -2343,12 +2107,10 @@ async def admin_callback(
 ━━━━━━━━━━━━━━━━━━
 
 
-رسیدهای پرداخت کاربران اینجا مدیریت می‌شود.
+رسیدهای کاربران از این بخش مدیریت می‌شوند.
 
 
-"""
-
-,
+""",
 
             reply_markup=admin_menu()
 
@@ -2369,11 +2131,9 @@ async def admin_callback(
     elif data == "admin_stats":
 
 
-
         await query.edit_message_text(
 
-
-            """
+            f"""
 
 📊 آمار Zeus Shop
 
@@ -2381,25 +2141,24 @@ async def admin_callback(
 ━━━━━━━━━━━━━━━━━━
 
 
+📦 سفارش‌های فعال:
+
+{len(ORDERS)}
+
+
+
 👥 کاربران:
 
-در حال دریافت...
+در حال اتصال به دیتابیس
 
-
-📦 سرویس‌ها:
-
-در حال دریافت...
 
 
 💰 درآمد:
 
-در حال دریافت...
+در حال محاسبه
 
 
-
-"""
-
-,
+""",
 
             reply_markup=admin_menu()
 
@@ -2420,14 +2179,11 @@ async def admin_callback(
     elif data == "admin_broadcast":
 
 
-
         context.user_data["broadcast"] = True
 
 
 
-
         await query.edit_message_text(
-
 
             """
 
@@ -2459,24 +2215,20 @@ async def admin_callback(
     elif data == "admin_settings":
 
 
-
         await query.edit_message_text(
-
 
             """
 
-⚙ تنظیمات
+⚙ تنظیمات Zeus Shop
 
 
 ━━━━━━━━━━━━━━━━━━
 
 
-تنظیمات ربات در حال توسعه است.
+تنظیمات در حال توسعه است.
 
 
-"""
-
-,
+""",
 
             reply_markup=admin_menu()
 
@@ -2506,8 +2258,8 @@ async def broadcast_message(
 
     if update.effective_user.id != ADMIN_ID:
 
-
         return
+
 
 
 
@@ -2517,7 +2269,6 @@ async def broadcast_message(
         "broadcast"
 
     ):
-
 
         return
 
@@ -2530,11 +2281,7 @@ async def broadcast_message(
 
 
 
-
-
-
     message = update.message.text
-
 
 
 
@@ -2542,13 +2289,12 @@ async def broadcast_message(
 
     await update.message.reply_text(
 
-
         """
 
 ✅ پیام همگانی ثبت شد.
 
 
-ارسال برای کاربران شروع می‌شود.
+ارسال شروع می‌شود.
 
 
 """
@@ -2556,12 +2302,9 @@ async def broadcast_message(
     )
 
 
-
-
-
-
-    # در نسخه دیتابیس واقعی
-    # لیست کاربران از database گرفته می‌شود
+    # در نسخه دیتابیس واقعی:
+    # کاربران از دیتابیس گرفته می‌شوند
+    # و پیام برای همه ارسال می‌شود
     # ==========================================================
 # Zeus Shop VPN PRO
 # handlers.py
@@ -2579,15 +2322,12 @@ from telegram.ext import (
 
 
 
-
-
 # ==========================================================
 # Register All Handlers
 # ==========================================================
 
 
 def register_handlers(application):
-
 
 
     # ==========================
@@ -2598,11 +2338,8 @@ def register_handlers(application):
     application.add_handler(
 
         CommandHandler(
-
             "start",
-
             start
-
         )
 
     )
@@ -2612,11 +2349,8 @@ def register_handlers(application):
     application.add_handler(
 
         CommandHandler(
-
             "admin",
-
             admin_panel
-
         )
 
     )
@@ -2626,67 +2360,48 @@ def register_handlers(application):
 
 
     # ==========================
-    # Main Buttons
+    # Main Menu Buttons
     # ==========================
 
 
     application.add_handler(
 
         CallbackQueryHandler(
-
             buy_service,
-
             pattern="^buy_service$"
-
         )
 
     )
 
 
-
-
     application.add_handler(
 
         CallbackQueryHandler(
-
             profile,
-
             pattern="^profile$"
-
         )
 
     )
 
 
-
-
     application.add_handler(
 
         CallbackQueryHandler(
-
             my_services,
-
             pattern="^my_services$"
-
         )
 
     )
-
-
 
 
     application.add_handler(
 
         CallbackQueryHandler(
-
             renew,
-
             pattern="^renew$"
-
         )
 
     )
-
 
 
 
@@ -2700,16 +2415,11 @@ def register_handlers(application):
     application.add_handler(
 
         CallbackQueryHandler(
-
             select_plan,
-
             pattern="^plan_"
-
         )
 
     )
-
-
 
 
 
@@ -2723,61 +2433,41 @@ def register_handlers(application):
     application.add_handler(
 
         CallbackQueryHandler(
-
             payment,
-
-            pattern="^payment"
-
+            pattern="^payment$"
         )
 
     )
 
 
-
-
     application.add_handler(
 
         CallbackQueryHandler(
-
             send_receipt,
-
             pattern="^send_receipt$"
-
         )
 
     )
 
 
-
-
     application.add_handler(
 
         CallbackQueryHandler(
-
             approve_payment,
-
             pattern="^approve_"
-
         )
 
     )
-
-
 
 
     application.add_handler(
 
         CallbackQueryHandler(
-
             reject_payment,
-
             pattern="^reject_"
-
         )
 
     )
-
-
 
 
 
@@ -2791,43 +2481,28 @@ def register_handlers(application):
     application.add_handler(
 
         CallbackQueryHandler(
-
             support_menu,
-
             pattern="^support$"
-
         )
 
     )
 
 
-
-
-
     application.add_handler(
 
         CallbackQueryHandler(
-
             wallet,
-
             pattern="^wallet$"
-
         )
 
     )
 
 
-
-
-
     application.add_handler(
 
         CallbackQueryHandler(
-
             discount,
-
             pattern="^discount$"
-
         )
 
     )
@@ -2836,20 +2511,16 @@ def register_handlers(application):
 
 
 
-
     # ==========================
-    # Admin
+    # Admin Buttons
     # ==========================
 
 
     application.add_handler(
 
         CallbackQueryHandler(
-
             admin_callback,
-
             pattern="^admin_"
-
         )
 
     )
@@ -2858,21 +2529,16 @@ def register_handlers(application):
 
 
 
-
-
     # ==========================
-    # Messages
+    # Photo Receipt
     # ==========================
 
 
     application.add_handler(
 
         MessageHandler(
-
             filters.PHOTO,
-
             receipt_handler
-
         )
 
     )
@@ -2880,59 +2546,52 @@ def register_handlers(application):
 
 
 
+
+    # ==========================
+    # Text Messages
+    # ==========================
+
+
     application.add_handler(
 
         MessageHandler(
-
             filters.TEXT & ~filters.COMMAND,
-
             custom_volume
-
         )
 
     )
 
 
-
-
     application.add_handler(
 
         MessageHandler(
-
             filters.TEXT & ~filters.COMMAND,
-
             support_message
-
         )
 
     )
 
 
-
-
     application.add_handler(
 
         MessageHandler(
-
             filters.TEXT & ~filters.COMMAND,
-
             receive_discount
-
         )
 
     )
-
-
 
 
     application.add_handler(
 
         MessageHandler(
-
             filters.TEXT & ~filters.COMMAND,
-
             broadcast_message
-
         )
 
     )
+
+
+    print(
+        "✅ Zeus handlers loaded successfully"
+        )
