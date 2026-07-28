@@ -89,7 +89,7 @@ async def start(
         text=WELCOME_TEXT,
         reply_markup=main_menu()
     )
-  # ==========================================================
+    # ==========================================================
 # Zeus Shop VPN PRO
 # handlers.py
 # Part 2
@@ -207,7 +207,7 @@ async def buy_service(
         reply_markup=plans_menu()
 
     )
-  # ==========================================================
+    # ==========================================================
 # Zeus Shop VPN PRO
 # handlers.py
 # Part 3
@@ -397,8 +397,8 @@ async def custom_volume(
 
         reply_markup=keyboard
 
-  )
-  # ==========================================================
+        )
+   # ==========================================================
 # Zeus Shop VPN PRO
 # handlers.py
 # Part 4
@@ -566,8 +566,8 @@ async def receipt_handler(
         "✅ رسید شما دریافت شد.\n\n"
         "پس از تأیید ادمین، سرویس به صورت خودکار ساخته خواهد شد."
 
-  )
-  # ==========================================================
+        )
+# ==========================================================
 # Zeus Shop VPN PRO
 # handlers.py
 # Part 5
@@ -788,410 +788,679 @@ async def reject_payment(
 
         caption="❌ پرداخت رد شد."
 
-)
-  # ==========================================================
-# Zeus Shop VPN PRO FINAL
+        )
+    # ==========================================================
+# Zeus Shop VPN PRO
 # handlers.py
-# Part 6/8
+# Part 6
 # ==========================================================
 
 
-# ==========================
-# Profile Handler
-# ==========================
-
-async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    user = update.effective_user
-
-    text = f"""
-👤 پروفایل کاربر
-
-━━━━━━━━━━━━━━━━━━
-
-🆔 آیدی تلگرام:
-`{user.id}`
-
-👤 نام:
-{user.first_name}
-
-━━━━━━━━━━━━━━━━━━
-
-📡 وضعیت اشتراک:
-❌ هنوز اشتراکی فعال نیست
-
-برای خرید اشتراک از منوی اصلی استفاده کنید.
-
-"""
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🛒 خرید اشتراک",
-                callback_data="buy"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🔙 بازگشت",
-                callback_data="back_menu"
-            )
-        ]
-    ]
-
-    await update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode="Markdown"
-    )
-
-
-
-# ==========================
-# Support Handler
-# ==========================
-
-async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    text = """
-🆘 پشتیبانی Zeus Shop VPN
-
-━━━━━━━━━━━━━━━━━━
-
-اگر مشکلی در اتصال یا خرید دارید
-با پشتیبانی تماس بگیرید.
-
-📞 پشتیبانی:
-@YourSupport
-
-━━━━━━━━━━━━━━━━━━
-
-"""
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "💬 تماس با پشتیبانی",
-                url="https://t.me/YourSupport"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🔙 بازگشت",
-                callback_data="back_menu"
-            )
-        ]
-    ]
-
-    await update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-
-
-
-# ==========================
-# Download Handler
-# ==========================
-
-async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    text = """
-📲 دانلود برنامه اتصال
-
-━━━━━━━━━━━━━━━━━━
-
-🤖 Android:
-v2rayNG
-
-🍎 iPhone:
-Streisand
-
-💻 Windows:
-v2rayN
-
-بعد از دریافت کانفیگ،
-داخل برنامه وارد کنید.
-
-━━━━━━━━━━━━━━━━━━
-"""
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🔙 بازگشت",
-                callback_data="back_menu"
-            )
-        ]
-    ]
-
-    await update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-  )
-  # ==========================================================
-# Zeus Shop VPN PRO FINAL
-# handlers.py
-# Part 7/8
+# ==========================================================
+# Profile
 # ==========================================================
 
+async def profile(
 
-# ==========================
-# Buy Subscription Handler
-# ==========================
+    update: Update,
 
-async def buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context: ContextTypes.DEFAULT_TYPE
 
-    text = """
-🛒 خرید اشتراک Zeus Shop VPN
-
-━━━━━━━━━━━━━━━━━━
-
-پلن مورد نظر خود را انتخاب کنید:
-
-⚡ 1 ماهه
-🔥 3 ماهه
-👑 6 ماهه
-💎 1 ساله
-
-━━━━━━━━━━━━━━━━━━
-"""
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "⚡ 1 ماهه",
-                callback_data="plan_1"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🔥 3 ماهه",
-                callback_data="plan_3"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "👑 6 ماهه",
-                callback_data="plan_6"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "💎 1 ساله",
-                callback_data="plan_12"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🔙 بازگشت",
-                callback_data="back_menu"
-            )
-        ]
-    ]
-
-    await update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-
-
-
-# ==========================
-# Plan Select Handler
-# ==========================
-
-async def select_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-
-    plan = query.data.replace(
-        "plan_",
-        ""
-    )
-
-    prices = {
-        "1": "50,000 تومان",
-        "3": "130,000 تومان",
-        "6": "240,000 تومان",
-        "12": "450,000 تومان"
-    }
-
-    names = {
-        "1": "یک ماهه",
-        "3": "سه ماهه",
-        "6": "شش ماهه",
-        "12": "یک ساله"
-    }
-
-
-    text = f"""
-💳 پرداخت اشتراک
-
-━━━━━━━━━━━━━━━━━━
-
-📦 پلن:
-{names[plan]}
-
-💰 قیمت:
-{prices[plan]}
-
-━━━━━━━━━━━━━━━━━━
-
-بعد از پرداخت، رسید را ارسال کنید.
-
-"""
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "💳 اطلاعات پرداخت",
-                callback_data="payment"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🔙 برگشت",
-                callback_data="buy"
-            )
-        ]
-    ]
-
-
-    await query.edit_message_text(
-        text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-
-
-
-# ==========================
-# Payment Info
-# ==========================
-
-async def payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    text = """
-💳 اطلاعات پرداخت
-
-━━━━━━━━━━━━━━━━━━
-
-🏦 شماره کارت:
-
-0000-0000-0000-0000
-
-👤 به نام:
-نام صاحب کارت
-
-━━━━━━━━━━━━━━━━━━
-
-بعد از واریز، عکس رسید را ارسال کنید.
-
-"""
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "📤 ارسال رسید",
-                callback_data="send_receipt"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🔙 بازگشت",
-                callback_data="buy"
-            )
-        ]
-    ]
-
-
-    await update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-  # ==========================================================
-# Zeus Shop VPN PRO FINAL
-# handlers.py
-# Part 8/8 FINAL
-# ==========================================================
-
-
-# ==========================
-# Callback Router
-# ==========================
-
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+):
 
     query = update.callback_query
 
     await query.answer()
 
-    data = query.data
+    user = query.from_user
+
+    text = f"""
+👤 پروفایل کاربر
+
+━━━━━━━━━━━━━━
+
+🆔 شناسه
+
+{user.id}
+
+👤 نام
+
+{user.full_name}
+
+📛 یوزرنیم
+
+@{user.username if user.username else "ندارد"}
+
+━━━━━━━━━━━━━━
+
+💎 وضعیت حساب
+
+کاربر ویژه
+
+"""
+
+    keyboard = InlineKeyboardMarkup(
+
+        [
+
+            [
+
+                InlineKeyboardButton(
+
+                    "🌍 سرویس‌های من",
+
+                    callback_data="my_services"
+
+                )
+
+            ],
+
+            [
+
+                InlineKeyboardButton(
+
+                    "⬅ بازگشت",
+
+                    callback_data="main_menu"
+
+                )
+
+            ]
+
+        ]
+
+    )
+
+    await query.edit_message_text(
+
+        text,
+
+        reply_markup=keyboard
+
+    )
 
 
-    if data == "profile":
-        await profile(update, context)
+# ==========================================================
+# My Services
+# ==========================================================
 
+async def my_services(
 
-    elif data == "support":
-        await support(update, context)
+    update: Update,
 
+    context: ContextTypes.DEFAULT_TYPE
 
-    elif data == "download":
-        await download(update, context)
+):
 
+    query = update.callback_query
 
-    elif data == "buy":
-        await buy(update, context)
+    await query.answer()
 
+    try:
 
-    elif data.startswith("plan_"):
-        await select_plan(update, context)
+        services = panel.get_user_services(
 
+            query.from_user.id
 
-    elif data == "payment":
-        await payment(update, context)
+        )
 
+    except:
 
-    elif data == "back_menu":
+        services = []
+
+    if not services:
 
         await query.edit_message_text(
-            text=WELCOME_TEXT,
-            reply_markup=main_menu()
+
+            "❌ هنوز هیچ سرویسی ندارید.",
+
+            reply_markup=InlineKeyboardMarkup(
+
+                [
+
+                    [
+
+                        InlineKeyboardButton(
+
+                            "⬅ بازگشت",
+
+                            callback_data="main_menu"
+
+                        )
+
+                    ]
+
+                ]
+
+            )
+
         )
 
+        return
 
+    text = "🌍 سرویس‌های شما\n\n"
 
-# ==========================
-# Register Handlers
-# ==========================
+    for service in services:
 
-def register_handlers(application):
+        text += f"""
 
+👤 {service['username']}
 
-    application.add_handler(
-        CommandHandler(
-            "start",
-            start
-        )
+📊 {service['traffic']}
+
+📅 {service['days']} روز
+
+━━━━━━━━━━━━━━
+
+"""
+
+    keyboard = InlineKeyboardMarkup(
+
+        [
+
+            [
+
+                InlineKeyboardButton(
+
+                    "📊 میزان مصرف",
+
+                    callback_data="usage"
+
+                )
+
+            ],
+
+            [
+
+                InlineKeyboardButton(
+
+                    "🔄 تمدید سرویس",
+
+                    callback_data="renew"
+
+                )
+
+            ],
+
+            [
+
+                InlineKeyboardButton(
+
+                    "⬅ بازگشت",
+
+                    callback_data="profile"
+
+                )
+
+            ]
+
+        ]
+
+    )
+
+    await query.edit_message_text(
+
+        text,
+
+        reply_markup=keyboard
+
     )
 
 
-    application.add_handler(
-        CallbackQueryHandler(
-            button_handler
+# ==========================================================
+# Usage
+# ==========================================================
+
+async def usage(
+
+    update: Update,
+
+    context: ContextTypes.DEFAULT_TYPE
+
+):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    await query.edit_message_text(
+
+        """
+
+📊 میزان مصرف
+
+━━━━━━━━━━━━━━
+
+🌐 مصرف امروز
+
+0 GB
+
+📦 حجم باقی‌مانده
+
+در حال دریافت...
+
+""",
+
+        reply_markup=InlineKeyboardMarkup(
+
+            [
+
+                [
+
+                    InlineKeyboardButton(
+
+                        "⬅ بازگشت",
+
+                        callback_data="my_services"
+
+                    )
+
+                ]
+
+            ]
+
         )
+
     )
 
 
-    application.add_handler(
-        MessageHandler(
-            filters.PHOTO,
-            receipt_handler
+# ==========================================================
+# Renew
+# ==========================================================
+
+async def renew(
+
+    update: Update,
+
+    context: ContextTypes.DEFAULT_TYPE
+
+):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    await query.edit_message_text(
+
+        """
+
+🔄 تمدید سرویس
+
+برای تمدید سرویس،
+
+پلن جدید خود را انتخاب کنید.
+
+""",
+
+        reply_markup=plans_menu()
+
+    )
+    # ==========================================================
+# Zeus Shop VPN PRO
+# handlers.py
+# Part 7
+# ==========================================================
+
+
+# ==========================================================
+# Support
+# ==========================================================
+
+async def support_menu(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    context.user_data["support"] = True
+
+    await query.edit_message_text(
+        """
+🎧 پشتیبانی آنلاین
+
+━━━━━━━━━━━━━━
+
+پیام خود را ارسال کنید.
+
+ادمین در اولین فرصت پاسخ خواهد داد.
+
+━━━━━━━━━━━━━━
+""",
+
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "⬅ بازگشت",
+                        callback_data="main_menu"
+                    )
+                ]
+            ]
         )
     )
 
 
 # ==========================================================
-# END OF handlers.py
+# Receive Support Message
 # ==========================================================
+
+async def support_message(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    if not context.user_data.get("support"):
+        return
+
+    context.user_data["support"] = False
+
+    text = update.message.text
+
+    await context.bot.send_message(
+
+        chat_id=ADMIN_ID,
+
+        text=f"""
+📩 تیکت جدید
+
+━━━━━━━━━━━━━━
+
+👤 کاربر
+
+{update.effective_user.full_name}
+
+🆔
+
+{update.effective_user.id}
+
+━━━━━━━━━━━━━━
+
+{text}
+"""
+
+    )
+
+    await update.message.reply_text(
+        "✅ پیام شما ارسال شد."
+    )
+
+
+# ==========================================================
+# Wallet
+# ==========================================================
+
+async def wallet(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    await query.edit_message_text(
+
+        """
+💰 کیف پول
+
+━━━━━━━━━━━━━━
+
+موجودی:
+
+0 تومان
+
+━━━━━━━━━━━━━━
+
+در نسخه بعدی قابلیت شارژ کیف پول اضافه می‌شود.
+""",
+
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "⬅ بازگشت",
+                        callback_data="main_menu"
+                    )
+                ]
+            ]
+        )
+
+    )
+
+
+# ==========================================================
+# Discount
+# ==========================================================
+
+async def discount(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    context.user_data["discount"] = True
+
+    await query.edit_message_text(
+
+        """
+🎁 کد تخفیف
+
+━━━━━━━━━━━━━━
+
+کد تخفیف خود را ارسال کنید.
+""",
+
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "⬅ بازگشت",
+                        callback_data="main_menu"
+                    )
+                ]
+            ]
+        )
+
+    )
+
+
+# ==========================================================
+# Receive Discount
+# ==========================================================
+
+async def receive_discount(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    if not context.user_data.get("discount"):
+        return
+
+    context.user_data["discount"] = False
+
+    code = update.message.text.upper()
+
+    if code == "ZEUS20":
+
+        await update.message.reply_text(
+            "✅ کد تخفیف ۲۰٪ با موفقیت اعمال شد."
+        )
+
+    else:
+
+        await update.message.reply_text(
+            "❌ کد تخفیف معتبر نیست."
+)
+        # ==========================================================
+# Zeus Shop VPN PRO
+# handlers.py
+# Part 8
+# Admin Panel
+# ==========================================================
+
+from modules.keyboards import admin_menu
+
+
+# ==========================================================
+# Admin Panel
+# ==========================================================
+
+async def admin_panel(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    if update.effective_user.id != ADMIN_ID:
+
+        return
+
+    await update.message.reply_text(
+
+        """
+👑 پنل مدیریت Zeus Shop
+
+به پنل مدیریت خوش آمدید.
+""",
+
+        reply_markup=admin_menu()
+
+    )
+
+
+# ==========================================================
+# Admin Callback
+# ==========================================================
+
+async def admin_callback(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    if query.from_user.id != ADMIN_ID:
+
+        return
+
+    data = query.data
+
+    # =======================
+    # Users
+    # =======================
+
+    if data == "admin_users":
+
+        await query.edit_message_text(
+
+            "👥 تعداد کاربران\n\nدر نسخه بعدی از دیتابیس خوانده می‌شود.",
+
+            reply_markup=admin_menu()
+
+        )
+
+    # =======================
+    # Orders
+    # =======================
+
+    elif data == "admin_orders":
+
+        await query.edit_message_text(
+
+            "📦 سفارشات\n\nدر نسخه بعدی نمایش داده می‌شود.",
+
+            reply_markup=admin_menu()
+
+        )
+
+    # =======================
+    # Payments
+    # =======================
+
+    elif data == "admin_payments":
+
+        await query.edit_message_text(
+
+            "💳 پرداخت‌ها\n\nرسیدهای جدید اینجا نمایش داده می‌شوند.",
+
+            reply_markup=admin_menu()
+
+        )
+
+    # =======================
+    # Broadcast
+    # =======================
+
+    elif data == "admin_broadcast":
+
+        context.user_data["broadcast"] = True
+
+        await query.edit_message_text(
+
+            "📢 پیام همگانی\n\nپیام خود را ارسال کنید."
+
+        )
+
+    # =======================
+    # Statistics
+    # =======================
+
+    elif data == "admin_stats":
+
+        await query.edit_message_text(
+
+            """
+📊 آمار ربات
+
+👥 کاربران:
+در حال بارگذاری...
+
+📦 سفارش‌ها:
+در حال بارگذاری...
+
+💰 درآمد:
+در حال بارگذاری...
+""",
+
+            reply_markup=admin_menu()
+
+        )
+
+    # =======================
+    # Settings
+    # =======================
+
+    elif data == "admin_settings":
+
+        await query.edit_message_text(
+
+            """
+⚙ تنظیمات
+
+در نسخه بعدی تکمیل خواهد شد.
+""",
+
+            reply_markup=admin_menu()
+
+        )
+
+
+# ==========================================================
+# Broadcast Message
+# ==========================================================
+
+async def broadcast_message(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    if update.effective_user.id != ADMIN_ID:
+
+       
