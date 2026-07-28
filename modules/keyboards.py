@@ -88,13 +88,13 @@ def main_menu():
 
     ]
 
-
     return InlineKeyboardMarkup(keyboard)
 
 
 
 # ==========================================================
-# Plans Menu  (اضافه شد برای رفع خطا)
+# Plans Menu
+# هماهنگ با config.py
 # ==========================================================
 
 def plans_menu():
@@ -104,35 +104,35 @@ def plans_menu():
         [
             InlineKeyboardButton(
                 "⚡ اقتصادی | 20GB | 15 روز",
-                callback_data="plan_basic"
+                callback_data="plan_20"
             )
         ],
 
         [
             InlineKeyboardButton(
                 "🔥 نقره‌ای | 50GB | 30 روز",
-                callback_data="plan_silver"
+                callback_data="plan_50"
             )
         ],
 
         [
             InlineKeyboardButton(
                 "💎 طلایی | 100GB | 30 روز",
-                callback_data="plan_gold"
+                callback_data="plan_100"
             )
         ],
 
         [
             InlineKeyboardButton(
-                "👑 VIP نامحدود",
-                callback_data="plan_vip"
+                "👑 VIP | نامحدود | 30 روز",
+                callback_data="plan_unlimited"
             )
         ],
 
         [
             InlineKeyboardButton(
                 "🛠 حجم دلخواه",
-                callback_data="plan_custom"
+                callback_data="custom"
             )
         ],
 
@@ -144,7 +144,6 @@ def plans_menu():
         ]
 
     ]
-
 
     return InlineKeyboardMarkup(keyboard)
 
@@ -207,7 +206,6 @@ def admin_menu():
         ]
 
     ]
-
 
     return InlineKeyboardMarkup(keyboard)
 
