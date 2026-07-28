@@ -19,7 +19,7 @@ BOT_TOKEN = os.getenv(
 ADMIN_ID = int(
     os.getenv(
         "ADMIN_ID",
-        "123456789"
+        "0"
     )
 )
 
@@ -53,13 +53,15 @@ PANEL_PASSWORD = os.getenv(
 )
 
 
-# API TOKEN پنل برای Bot
+# API TOKEN
 PANEL_TOKEN = os.getenv(
     "PANEL_TOKEN",
     ""
 )
 
 
+
+# Inbound ID
 
 INBOUND_ID = int(
     os.getenv(
@@ -82,7 +84,7 @@ CARD_NUMBER = os.getenv(
 
 CARD_HOLDER = os.getenv(
     "CARD_HOLDER",
-    "نام صاحب کارت"
+    "صاحب کارت"
 )
 
 
@@ -96,6 +98,7 @@ BANK_NAME = os.getenv(
 # ==========================================================
 # Plans
 # ==========================================================
+
 
 PLANS = {
 
@@ -125,7 +128,7 @@ PLANS = {
 
         "days": 30,
 
-        "price": 300000
+        "price": 250000
 
     },
 
@@ -140,7 +143,7 @@ PLANS = {
 
         "days": 30,
 
-        "price": 600000
+        "price": 400000
 
     },
 
@@ -155,7 +158,7 @@ PLANS = {
 
         "days": 30,
 
-        "price": 900000
+        "price": 600000
 
     },
 
@@ -173,6 +176,7 @@ PLANS = {
         "price": 0
 
     }
+
 
 }
 
