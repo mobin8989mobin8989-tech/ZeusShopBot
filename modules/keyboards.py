@@ -3,7 +3,10 @@
 # modules/keyboards.py
 # ==========================================================
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
 
 
 # ==========================================================
@@ -36,7 +39,7 @@ def main_menu():
         [
             InlineKeyboardButton(
                 "💎 پلن‌ها",
-                callback_data="plans"
+                callback_data="buy_service"
             ),
 
             InlineKeyboardButton(
@@ -52,17 +55,12 @@ def main_menu():
             ),
 
             InlineKeyboardButton(
-                "🧾 سفارش‌های من",
+                "🧾 سفارش‌ها",
                 callback_data="orders"
             )
         ],
 
         [
-            InlineKeyboardButton(
-                "📈 وضعیت مصرف",
-                callback_data="usage"
-            ),
-
             InlineKeyboardButton(
                 "🔄 تمدید سرویس",
                 callback_data="renew"
@@ -90,7 +88,66 @@ def main_menu():
 
     ]
 
+
     return InlineKeyboardMarkup(keyboard)
+
+
+
+# ==========================================================
+# Plans Menu  (اضافه شد برای رفع خطا)
+# ==========================================================
+
+def plans_menu():
+
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "⚡ اقتصادی | 20GB | 15 روز",
+                callback_data="plan_basic"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🔥 نقره‌ای | 50GB | 30 روز",
+                callback_data="plan_silver"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "💎 طلایی | 100GB | 30 روز",
+                callback_data="plan_gold"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "👑 VIP نامحدود",
+                callback_data="plan_vip"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🛠 حجم دلخواه",
+                callback_data="plan_custom"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "⬅ بازگشت",
+                callback_data="main_menu"
+            )
+        ]
+
+    ]
+
+
+    return InlineKeyboardMarkup(keyboard)
+
 
 
 # ==========================================================
@@ -151,29 +208,34 @@ def admin_menu():
 
     ]
 
+
     return InlineKeyboardMarkup(keyboard)
 
 
+
 # ==========================================================
-# Back Button
+# Back Menu
 # ==========================================================
 
 def back_menu():
 
-    keyboard = [
+    return InlineKeyboardMarkup(
 
         [
 
-            InlineKeyboardButton(
-                "⬅ بازگشت",
-                callback_data="main_menu"
-            )
+            [
+
+                InlineKeyboardButton(
+                    "⬅ بازگشت",
+                    callback_data="main_menu"
+                )
+
+            ]
 
         ]
 
-    ]
+    )
 
-    return InlineKeyboardMarkup(keyboard)
 
 
 # ==========================================================
@@ -182,22 +244,24 @@ def back_menu():
 
 def confirm_menu():
 
-    keyboard = [
+    return InlineKeyboardMarkup(
 
         [
 
-            InlineKeyboardButton(
-                "✅ تایید",
-                callback_data="confirm"
-            ),
+            [
 
-            InlineKeyboardButton(
-                "❌ انصراف",
-                callback_data="cancel"
-            )
+                InlineKeyboardButton(
+                    "✅ تایید",
+                    callback_data="confirm"
+                ),
+
+                InlineKeyboardButton(
+                    "❌ انصراف",
+                    callback_data="cancel"
+                )
+
+            ]
 
         ]
 
-    ]
-
-    return InlineKeyboardMarkup(keyboard)
+    )
