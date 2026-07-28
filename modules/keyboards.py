@@ -9,6 +9,7 @@ from telegram import (
 )
 
 
+
 # ==========================================================
 # Main Menu
 # ==========================================================
@@ -24,6 +25,7 @@ def main_menu():
             )
         ],
 
+
         [
             InlineKeyboardButton(
                 "🌍 سرویس‌های من",
@@ -35,6 +37,7 @@ def main_menu():
                 callback_data="profile"
             )
         ],
+
 
         [
             InlineKeyboardButton(
@@ -48,6 +51,7 @@ def main_menu():
             )
         ],
 
+
         [
             InlineKeyboardButton(
                 "💰 کیف پول",
@@ -60,12 +64,14 @@ def main_menu():
             )
         ],
 
+
         [
             InlineKeyboardButton(
                 "🔄 تمدید سرویس",
                 callback_data="renew"
             )
         ],
+
 
         [
             InlineKeyboardButton(
@@ -79,6 +85,7 @@ def main_menu():
             )
         ],
 
+
         [
             InlineKeyboardButton(
                 "📢 کانال اطلاع‌رسانی",
@@ -88,64 +95,87 @@ def main_menu():
 
     ]
 
+
     return InlineKeyboardMarkup(keyboard)
+
+
 
 
 
 # ==========================================================
 # Plans Menu
-# هماهنگ با config.py
 # ==========================================================
 
 def plans_menu():
 
+
     keyboard = [
 
         [
+
             InlineKeyboardButton(
                 "⚡ اقتصادی | 20GB | 15 روز",
-                callback_data="plan_20"
+                callback_data="plan_basic"
             )
+
         ],
 
+
         [
+
             InlineKeyboardButton(
                 "🔥 نقره‌ای | 50GB | 30 روز",
-                callback_data="plan_50"
+                callback_data="plan_silver"
             )
+
         ],
 
+
         [
+
             InlineKeyboardButton(
                 "💎 طلایی | 100GB | 30 روز",
-                callback_data="plan_100"
+                callback_data="plan_gold"
             )
+
         ],
 
+
         [
+
             InlineKeyboardButton(
-                "👑 VIP | نامحدود | 30 روز",
-                callback_data="plan_unlimited"
+                "👑 VIP نامحدود",
+                callback_data="plan_vip"
             )
+
         ],
 
+
         [
+
             InlineKeyboardButton(
                 "🛠 حجم دلخواه",
                 callback_data="custom"
             )
+
         ],
 
+
         [
+
             InlineKeyboardButton(
                 "⬅ بازگشت",
                 callback_data="main_menu"
             )
+
         ]
 
     ]
 
+
     return InlineKeyboardMarkup(keyboard)
+
+
 
 
 
@@ -155,9 +185,11 @@ def plans_menu():
 
 def admin_menu():
 
+
     keyboard = [
 
         [
+
             InlineKeyboardButton(
                 "👥 کاربران",
                 callback_data="admin_users"
@@ -167,9 +199,12 @@ def admin_menu():
                 "📦 سفارشات",
                 callback_data="admin_orders"
             )
+
         ],
 
+
         [
+
             InlineKeyboardButton(
                 "💳 پرداخت‌ها",
                 callback_data="admin_payments"
@@ -179,21 +214,27 @@ def admin_menu():
                 "📡 سرویس‌ها",
                 callback_data="admin_services"
             )
+
         ],
 
+
         [
+
             InlineKeyboardButton(
-                "📢 ارسال همگانی",
+                "📢 پیام همگانی",
                 callback_data="admin_broadcast"
             ),
 
             InlineKeyboardButton(
-                "🎟 کد تخفیف",
+                "🎟 تخفیف‌ها",
                 callback_data="admin_discount"
             )
+
         ],
 
+
         [
+
             InlineKeyboardButton(
                 "📊 آمار",
                 callback_data="admin_stats"
@@ -203,19 +244,24 @@ def admin_menu():
                 "⚙ تنظیمات",
                 callback_data="admin_settings"
             )
+
         ]
 
     ]
+
 
     return InlineKeyboardMarkup(keyboard)
 
 
 
+
+
 # ==========================================================
-# Back Menu
+# Back Button
 # ==========================================================
 
 def back_menu():
+
 
     return InlineKeyboardMarkup(
 
@@ -236,11 +282,14 @@ def back_menu():
 
 
 
+
+
 # ==========================================================
-# Confirm Menu
+# Confirm Button
 # ==========================================================
 
 def confirm_menu():
+
 
     return InlineKeyboardMarkup(
 
@@ -253,8 +302,9 @@ def confirm_menu():
                     callback_data="confirm"
                 ),
 
+
                 InlineKeyboardButton(
-                    "❌ انصراف",
+                    "❌ لغو",
                     callback_data="cancel"
                 )
 
