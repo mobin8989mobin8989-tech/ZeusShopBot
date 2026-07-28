@@ -1,8 +1,10 @@
 # ==========================================================
 # ZeusShopBot PRO
 # modules/panel.py
-# 3X-UI API Manager
+# 3X-UI Panel Manager
+# Fixed API Token Version
 # ==========================================================
+
 
 import requests
 import json
@@ -18,15 +20,21 @@ from config import (
 )
 
 
+
 urllib3.disable_warnings()
+
+
+
 
 
 class Panel:
 
 
+
     def __init__(self):
 
         self.url = PANEL_URL.rstrip("/")
+
 
         self.session = requests.Session()
 
@@ -38,47 +46,6 @@ class Panel:
             "Content-Type": "application/json"
 
         })
-
-
-
-
-    # ======================================================
-    # Request Helper
-    # ======================================================
-
-    def request(
-        self,
-        method,
-        url,
-        **kwargs
-    ):
-
-        response = self.session.request(
-
-            method,
-
-            url,
-
-            verify=False,
-
-            timeout=30,
-
-            **kwargs
-
-        )
-
-
-        try:
-
-            return response.json()
-
-        except:
-
-            raise Exception(
-
-                response.text
-
-            )
 
 
 
@@ -100,10 +67,7 @@ class Panel:
     # Username
     # ======================================================
 
-    def generate_username(
-        self,
-        telegram_id
-    ):
+    def generate_username(self, telegram_id):
 
         return (
 
@@ -117,6 +81,7 @@ class Panel:
 
 
 
+
     # ======================================================
     # Get Inbounds
     # ======================================================
@@ -124,13 +89,19 @@ class Panel:
     def get_inbounds(self):
 
 
-        data = self.request(
+        r = self.session.get(
 
-            "GET",
+            f"{self.url}/panel/api/inbounds/list",
 
-            f"{self.url}/panel/api/inbounds/list"
+            verify=False,
+
+            timeout=20
 
         )
+
+
+        data = r.json()
+
 
 
         if not data.get("success"):
@@ -138,17 +109,19 @@ class Panel:
             raise Exception(
 
                 data.get(
+
                     "msg",
-                    "Cannot get inbounds"
+
+                    "Get inbound failed"
+
                 )
 
             )
 
 
-        return data.get(
-            "obj",
-            []
-        )
+
+        return data.get("obj", [])
+
 
 
 
@@ -171,90 +144,13 @@ class Panel:
 
 
 
+
         raise Exception(
 
-            "Inbound not found"
+            "Inbound پیدا نشد"
 
         )
 
-
-
-
-
-
-    # ======================================================
-    # Create Client
-    # ======================================================
-
-    def create_client(
-
-        self,
-
-        telegram_id,
-
-        days,
-
-        traffic_gb
-
-    ):
-
-
-        return {
-
-
-            "id":
-                self.generate_uuid(),
-
-
-            "email":
-                self.generate_username(
-                    telegram_id
-                ),
-
-
-            "tgId":
-                str(telegram_id),
-
-
-            "enable":
-                True,
-
-
-            "totalGB":
-                traffic_gb
-                *
-                1024
-                *
-                1024
-                *
-                1024,
-
-
-            "expiryTime":
-                int(
-
-                    time.time()
-
-                    +
-
-                    days * 86400
-
-                )
-
-                *
-
-                1000,
-
-
-            "limitIp":
-                0,
-
-
-            "reset":
-                0
-
-
-        }
 
 
 
@@ -282,37 +178,69 @@ class Panel:
 
 
 
-        try:
-
-            settings = json.loads(
-
-                inbound["settings"]
-
-            )
+        settings = inbound["settings"]
 
 
-        except:
 
+        if isinstance(settings, str):
 
-            settings = {
-
-                "clients":[]
-
-            }
+            settings = json.loads(settings)
 
 
 
 
 
-        client = self.create_client(
+        client = {
 
-            telegram_id,
 
-            days,
+            "id": self.generate_uuid(),
 
-            traffic_gb
 
-        )
+            "email": self.generate_username(
+
+                telegram_id
+
+            ),
+
+
+            "tgId": str(telegram_id),
+
+
+            "enable": True,
+
+
+            "expiryTime":
+
+                int(
+
+                    time.time()
+
+                    +
+
+                    days * 86400
+
+                ) * 1000,
+
+
+            "totalGB":
+
+                traffic_gb *
+
+                1024 *
+
+                1024 *
+
+                1024,
+
+
+            "limitIp": 0,
+
+
+            "reset": 0
+
+
+        }
+
 
 
 
@@ -327,11 +255,8 @@ class Panel:
 
 
 
-        clients.append(
+        clients.append(client)
 
-            client
-
-        )
 
 
         settings["clients"] = clients
@@ -343,15 +268,12 @@ class Panel:
         payload = {
 
 
-            "id":
-                inbound["id"],
+            "id": inbound["id"],
 
 
             "settings":
-                json.dumps(
-                    settings
-                )
 
+                json.dumps(settings)
 
         }
 
@@ -359,14 +281,19 @@ class Panel:
 
 
 
+        r = self.session.post(
 
-        result = self.request(
-
-            "POST",
 
             f"{self.url}/panel/api/inbounds/update/{INBOUND_ID}",
 
-            json=payload
+
+            json=payload,
+
+
+            verify=False,
+
+
+            timeout=30
 
         )
 
@@ -374,13 +301,21 @@ class Panel:
 
 
 
-        if not result.get("success"):
+        data = r.json()
+
+
+
+        if not data.get("success"):
+
 
             raise Exception(
 
-                result.get(
+                data.get(
+
                     "msg",
+
                     "Create failed"
+
                 )
 
             )
@@ -389,22 +324,20 @@ class Panel:
 
 
 
+
+
         return {
 
 
-            "username":
-
-                client["email"],
+            "username": client["email"],
 
 
-            "uuid":
-
-                client["id"],
+            "uuid": client["id"],
 
 
             "subscription_url":
 
-                self.create_vless_link(
+                self.create_link(
 
                     inbound,
 
@@ -424,7 +357,7 @@ class Panel:
     # VLESS Link
     # ======================================================
 
-    def create_vless_link(
+    def create_link(
 
         self,
 
@@ -440,13 +373,19 @@ class Panel:
             self.url
 
             .replace(
+
                 "https://",
+
                 ""
+
             )
 
             .replace(
+
                 "http://",
+
                 ""
+
             )
 
             .split("/")[0]
@@ -459,19 +398,14 @@ class Panel:
 
             f"vless://{client['id']}@"
 
-            f"{host}:"
+            f"{host}:{inbound['port']}"
 
-            f"{inbound['port']}"
+            f"?encryption=none"
 
-            "?"
-
-            "type=tcp"
-
-            "&encryption=none"
-
-            f"#{inbound.get('remark','Zeus')}"
+            f"#{client['email']}"
 
         )
+
 
 
 
@@ -494,29 +428,30 @@ class Panel:
         inbound = self.get_inbound()
 
 
-        settings = json.loads(
 
-            inbound["settings"]
+        settings = inbound["settings"]
 
-        )
+
+
+        if isinstance(settings,str):
+
+            settings=json.loads(settings)
+
+
+
 
 
         result=[]
 
 
 
-        for client in settings.get(
-            "clients",
-            []
-        ):
+        for c in settings.get("clients",[]):
 
 
-            if client.get(
-                "tgId"
-            ) == str(telegram_id):
+            if c.get("tgId")==str(telegram_id):
 
 
-                result.append(client)
+                result.append(c)
 
 
 
