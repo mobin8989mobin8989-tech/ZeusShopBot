@@ -2,6 +2,7 @@
 # Zeus Shop VPN PRO
 # modules/panel.py
 # 3X-UI Panel Manager PRO
+# Part 1/3
 # ==========================================================
 
 
@@ -34,58 +35,68 @@ class Panel:
 
         self.session = requests.Session()
 
-        self.headers = {}
-
+        self.headers = {
+            "Content-Type": "application/json"
+        }
 
         self.login()
 
 
 
-
-
     # ======================================================
-    # Login
+    # Login 3X-UI
     # ======================================================
 
     def login(self):
 
 
-        # اگر توکن داریم
+        # اگر توکن واقعی 3x-ui وجود داشت
         if PANEL_TOKEN:
 
 
             self.headers = {
 
-                "Authorization":
-                f"Bearer {PANEL_TOKEN}"
+                "Authorization": PANEL_TOKEN,
+
+                "Content-Type":
+                "application/json"
 
             }
-
 
             return True
 
 
 
 
+        try:
 
-        # ورود معمولی
-        response = self.session.post(
+            response = self.session.post(
 
-            f"{self.url}/login",
+                f"{self.url}/login",
 
-            data={
+                json={
 
-                "username": PANEL_USERNAME,
+                    "username":
+                    PANEL_USERNAME,
 
-                "password": PANEL_PASSWORD
+                    "password":
+                    PANEL_PASSWORD
 
-            },
+                },
 
-            verify=False,
+                verify=False,
 
-            timeout=20
+                timeout=20
 
-        )
+            )
+
+
+        except Exception as e:
+
+            raise Exception(
+                f"❌ Login Connection Error\n{e}"
+            )
+
 
 
 
@@ -93,7 +104,9 @@ class Panel:
 
             raise Exception(
 
-                "❌ 3X-UI Login Failed"
+                f"❌ 3X-UI Login Failed\n"
+                f"Status: {response.status_code}\n"
+                f"{response.text}"
 
             )
 
@@ -125,9 +138,10 @@ class Panel:
         kwargs["verify"] = False
 
 
-        if self.headers:
+        if "headers" not in kwargs:
 
             kwargs["headers"] = self.headers
+
 
 
 
@@ -145,6 +159,7 @@ class Panel:
 
 
 
+
         try:
 
             return response.json()
@@ -155,7 +170,7 @@ class Panel:
 
             raise Exception(
 
-                response.text
+                f"❌ API Error\n{response.text}"
 
             )
 
@@ -164,39 +179,23 @@ class Panel:
 
 
     # ======================================================
-    # UUID
+    # UUID Generator
     # ======================================================
+
 
     def generate_uuid(self):
 
-        return str(uuid.uuid4())
-
-
-
-
-
-    # ======================================================
-    # Username
-    # ======================================================
-
-    def generate_username(
-
-        self,
-
-        telegram_id
-
-    ):
-
-        return (
-
-            f"zeus_{telegram_id}_"
-
-            f"{int(time.time())}"
-
+        return str(
+            uuid.uuid4()
         )
-        # ======================================================
-# Get Inbounds
-# ======================================================
+
+
+
+
+
+    # ======================================================
+    # Get Inbounds
+    # ======================================================
 
 
     def get_inbounds(self):
@@ -212,17 +211,21 @@ class Panel:
 
 
 
-        if not data.get("success"):
+        if not isinstance(data, dict):
 
+            raise Exception(
+                "❌ Invalid API Response"
+            )
+
+
+
+        if not data.get("success"):
 
             raise Exception(
 
                 data.get(
-
                     "msg",
-
                     "❌ Cannot get inbounds"
-
                 )
 
             )
@@ -230,22 +233,17 @@ class Panel:
 
 
         return data.get(
-
             "obj",
-
             []
-
         )
 
 
 
 
 
-
-
-# ======================================================
-# Get Selected Inbound
-# ======================================================
+    # ======================================================
+    # Get Selected Inbound
+    # ======================================================
 
 
     def get_inbound(self):
@@ -258,18 +256,31 @@ class Panel:
         for inbound in inbounds:
 
 
-            if int(inbound["id"]) == int(INBOUND_ID):
-
+            if str(inbound.get("id")) == str(INBOUND_ID):
 
                 return inbound
 
 
 
 
-
         raise Exception(
 
-            "❌ Inbound ID not found"
+            f"❌ Inbound {INBOUND_ID} Not Found"
+
+        )
+            # ======================================================
+    # Generate Username
+    # ======================================================
+
+
+    def generate_username(self, telegram_id):
+
+
+        return (
+
+            f"zeus_{telegram_id}_"
+
+            f"{int(time.time())}"
 
         )
 
@@ -277,11 +288,9 @@ class Panel:
 
 
 
-
-
-# ======================================================
-# Create Client Data
-# ======================================================
+    # ======================================================
+    # Create Client Data
+    # ======================================================
 
 
     def create_client(
@@ -300,7 +309,6 @@ class Panel:
         client_uuid = self.generate_uuid()
 
 
-
         username = self.generate_username(
 
             telegram_id
@@ -311,19 +319,25 @@ class Panel:
 
         expire_time = int(
 
-            time.time()
+            (
 
-            +
+                time.time()
 
-            days * 86400
+                +
 
-        ) * 1000
+                days * 86400
+
+            )
+
+            *
+
+            1000
+
+        )
 
 
 
-
-
-        total_bytes = (
+        total_bytes = int(
 
             traffic_gb
 
@@ -344,50 +358,49 @@ class Panel:
 
 
 
-
-        client = {
-
-
-            "id": client_uuid,
+        return {
 
 
-            "email": username,
+            "id":
+            client_uuid,
 
 
-            "tgId": str(telegram_id),
+            "email":
+            username,
 
 
-            "enable": True,
+            "tgId":
+            str(telegram_id),
 
 
-            "totalGB": total_bytes,
+            "enable":
+            True,
 
 
-            "expiryTime": expire_time,
+            "totalGB":
+            total_bytes,
 
 
-            "limitIp": 0,
+            "expiryTime":
+            expire_time,
 
 
-            "reset": 0
+            "limitIp":
+            0,
 
+
+            "reset":
+            0
 
         }
 
 
 
 
-        return client
 
-
-
-
-
-
-
-# ======================================================
-# Create Service
-# ======================================================
+    # ======================================================
+    # Create Service
+    # ======================================================
 
 
     def create_service(
@@ -403,34 +416,45 @@ class Panel:
     ):
 
 
-
         inbound = self.get_inbound()
-
-
 
 
 
         try:
 
 
-            settings = json.loads(
+            settings_raw = inbound.get(
 
-                inbound["settings"]
+                "settings",
+
+                "{}"
 
             )
 
 
-        except:
+
+            if isinstance(settings_raw, str):
+
+                settings = json.loads(
+
+                    settings_raw
+
+                )
+
+            else:
+
+                settings = settings_raw
+
+
+
+        except Exception as e:
 
 
             raise Exception(
 
-                "❌ Invalid inbound settings"
+                f"❌ Invalid inbound settings\n{e}"
 
             )
-
-
-
 
 
 
@@ -444,8 +468,6 @@ class Panel:
             traffic_gb
 
         )
-
-
 
 
 
@@ -473,7 +495,6 @@ class Panel:
 
 
 
-
         payload = {
 
 
@@ -485,20 +506,22 @@ class Panel:
 
             "settings":
 
-            json.dumps(settings)
+            json.dumps(
+
+                settings
+
+            )
 
         }
 
 
 
 
-
-
-        data = self.request(
+        result = self.request(
 
             "POST",
 
-            f"{self.url}/panel/api/inbounds/update/{INBOUND_ID}",
+            f"{self.url}/panel/api/inbounds/update/{inbound['id']}",
 
             json=payload
 
@@ -508,12 +531,18 @@ class Panel:
 
 
 
-        if not data.get("success"):
+        if not result.get(
+
+            "success",
+
+            False
+
+        ):
 
 
             raise Exception(
 
-                data.get(
+                result.get(
 
                     "msg",
 
@@ -540,10 +569,17 @@ class Panel:
 
             client["id"]
 
-            }
-        # ======================================================
-# Create VLESS Link
-# ======================================================
+
+
+        }
+
+
+
+
+
+    # ======================================================
+    # Create VLESS Link
+    # ======================================================
 
 
     def create_vless_link(
@@ -562,18 +598,25 @@ class Panel:
             self.url
 
             .replace(
+
                 "https://",
+
                 ""
+
             )
 
             .replace(
+
                 "http://",
+
                 ""
+
             )
 
             .split("/")[0]
 
         )
+
 
 
 
@@ -591,7 +634,9 @@ class Panel:
 
             )
 
+
         except:
+
 
             stream = {}
 
@@ -620,7 +665,6 @@ class Panel:
 
 
 
-
         params = {
 
 
@@ -644,7 +688,6 @@ class Panel:
 
 
 
-
         query = "&".join(
 
             [
@@ -660,22 +703,22 @@ class Panel:
 
 
 
-
         remark = inbound.get(
 
             "remark",
 
-            "Zeus"
+            "Zeus VPN"
 
         )
 
 
 
 
-
         return (
 
-            f"vless://{client['id']}@"
+            f"vless://"
+
+            f"{client['id']}@"
 
             f"{host}:"
 
@@ -686,17 +729,9 @@ class Panel:
             f"#{remark}"
 
         )
-
-
-
-
-
-
-
-
-# ======================================================
-# Get User Services
-# ======================================================
+            # ======================================================
+    # Get User Services
+    # ======================================================
 
 
     def get_user_services(
@@ -714,13 +749,32 @@ class Panel:
 
         try:
 
-            settings = json.loads(
 
-                inbound["settings"]
+            settings_raw = inbound.get(
+
+                "settings",
+
+                "{}"
 
             )
 
+
+            if isinstance(settings_raw, str):
+
+                settings = json.loads(
+
+                    settings_raw
+
+                )
+
+            else:
+
+                settings = settings_raw
+
+
+
         except:
+
 
             return []
 
@@ -729,8 +783,6 @@ class Panel:
 
 
         result = []
-
-
 
 
 
@@ -744,9 +796,15 @@ class Panel:
 
 
 
-            if client.get(
+            if str(
 
-                "tgId"
+                client.get(
+
+                    "tgId",
+
+                    ""
+
+                )
 
             ) == str(telegram_id):
 
@@ -760,7 +818,6 @@ class Panel:
 
 
 
-
         return result
 
 
@@ -768,10 +825,9 @@ class Panel:
 
 
 
-
-# ======================================================
-# Delete Service
-# ======================================================
+    # ======================================================
+    # Delete Service
+    # ======================================================
 
 
     def delete_service(
@@ -783,14 +839,19 @@ class Panel:
     ):
 
 
-
         inbound = self.get_inbound()
 
 
 
         settings = json.loads(
 
-            inbound["settings"]
+            inbound.get(
+
+                "settings",
+
+                "{}"
+
+            )
 
         )
 
@@ -803,6 +864,7 @@ class Panel:
             []
 
         )
+
 
 
 
@@ -829,10 +891,13 @@ class Panel:
 
             "settings":
 
-            json.dumps(settings)
+            json.dumps(
+
+                settings
+
+            )
 
         }
-
 
 
 
@@ -842,7 +907,7 @@ class Panel:
 
             "POST",
 
-            f"{self.url}/panel/api/inbounds/update/{INBOUND_ID}",
+            f"{self.url}/panel/api/inbounds/update/{inbound['id']}",
 
             json=payload
 
@@ -855,9 +920,9 @@ class Panel:
 
 
 
-# ======================================================
-# Renew Service
-# ======================================================
+    # ======================================================
+    # Renew Service
+    # ======================================================
 
 
     def renew_service(
@@ -873,20 +938,26 @@ class Panel:
     ):
 
 
+
         inbound = self.get_inbound()
 
 
 
         settings = json.loads(
 
-            inbound["settings"]
+            inbound.get(
+
+                "settings",
+
+                "{}"
+
+            )
 
         )
 
 
 
         found = False
-
 
 
 
@@ -910,19 +981,30 @@ class Panel:
 
 
 
+
                 client["expiryTime"] = int(
 
-                    time.time()
+                    (
 
-                    +
+                        time.time()
 
-                    days * 86400
+                        +
 
-                ) * 1000
+                        days * 86400
+
+                    )
+
+                    *
+
+                    1000
+
+                )
 
 
 
-                client["totalGB"] = (
+
+
+                client["totalGB"] = int(
 
                     traffic_gb
 
@@ -939,6 +1021,7 @@ class Panel:
                     1024
 
                 )
+
 
 
 
@@ -964,6 +1047,8 @@ class Panel:
 
 
 
+
+
         payload = {
 
 
@@ -975,10 +1060,13 @@ class Panel:
 
             "settings":
 
-            json.dumps(settings)
+            json.dumps(
+
+                settings
+
+            )
 
         }
-
 
 
 
@@ -988,7 +1076,7 @@ class Panel:
 
             "POST",
 
-            f"{self.url}/panel/api/inbounds/update/{INBOUND_ID}",
+            f"{self.url}/panel/api/inbounds/update/{inbound['id']}",
 
             json=payload
 
@@ -1001,9 +1089,9 @@ class Panel:
 
 
 
-# ======================================================
-# Get All Clients
-# ======================================================
+    # ======================================================
+    # Get All Clients
+    # ======================================================
 
 
     def get_all_clients(self):
@@ -1015,7 +1103,13 @@ class Panel:
 
         settings = json.loads(
 
-            inbound["settings"]
+            inbound.get(
+
+                "settings",
+
+                "{}"
+
+            )
 
         )
 
@@ -1027,4 +1121,4 @@ class Panel:
 
             []
 
-                )
+        )
