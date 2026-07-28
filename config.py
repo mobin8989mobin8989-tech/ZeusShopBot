@@ -1,5 +1,5 @@
 # ==========================================================
-# Zeus Shop VPN PRO
+# ZeusShopBot PRO
 # config.py
 # ==========================================================
 
@@ -19,20 +19,20 @@ BOT_TOKEN = os.getenv(
 ADMIN_ID = int(
     os.getenv(
         "ADMIN_ID",
-        "0"
+        "123456789"
     )
 )
 
 
 CHANNEL = os.getenv(
     "CHANNEL",
-    "@ZeusShop"
+    "https://t.me/Vpn1_v2rayNG"
 )
 
 
 
 # ==========================================================
-# 3X-UI Panel
+# 3X-UI PANEL
 # ==========================================================
 
 PANEL_URL = os.getenv(
@@ -53,11 +53,18 @@ PANEL_PASSWORD = os.getenv(
 )
 
 
-# Inbound شماره 4 پنل شما
+# API TOKEN پنل برای Bot
+PANEL_TOKEN = os.getenv(
+    "PANEL_TOKEN",
+    ""
+)
+
+
+
 INBOUND_ID = int(
     os.getenv(
         "INBOUND_ID",
-        "4"
+        "1"
     )
 )
 
@@ -69,44 +76,19 @@ INBOUND_ID = int(
 
 CARD_NUMBER = os.getenv(
     "CARD_NUMBER",
-    ""
+    "0000-0000-0000-0000"
 )
 
 
 CARD_HOLDER = os.getenv(
     "CARD_HOLDER",
-    ""
+    "نام صاحب کارت"
 )
 
 
 BANK_NAME = os.getenv(
     "BANK_NAME",
-    ""
-)
-
-
-
-# ==========================================================
-# Database
-# ==========================================================
-
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "sqlite:///zeus.db"
-)
-
-
-
-# ==========================================================
-# Pricing
-# ==========================================================
-
-# قیمت هر گیگابایت
-PRICE_PER_GB = int(
-    os.getenv(
-        "PRICE_PER_GB",
-        "6000"
-    )
+    "بانک"
 )
 
 
@@ -118,73 +100,84 @@ PRICE_PER_GB = int(
 PLANS = {
 
 
-    # 20 گیگ
-    "plan_20": {
+    "plan_basic": {
 
-        "name": "⚡ پلن اقتصادی",
+        "name": "⚡ اقتصادی",
 
-        "price": 120000,
+        "traffic": "20GB",
+
+        "gb": 20,
 
         "days": 15,
 
-        "traffic": "20GB"
+        "price": 120000
 
     },
 
 
-    # 50 گیگ
-    "plan_50": {
+    "plan_silver": {
 
-        "name": "🔥 پلن نقره‌ای",
+        "name": "🔥 نقره‌ای",
 
-        "price": 300000,
+        "traffic": "50GB",
+
+        "gb": 50,
 
         "days": 30,
 
-        "traffic": "50GB"
+        "price": 300000
 
     },
 
 
-    # 100 گیگ
-    "plan_100": {
+    "plan_gold": {
 
-        "name": "💎 پلن طلایی",
+        "name": "💎 طلایی",
 
-        "price": 600000,
+        "traffic": "100GB",
+
+        "gb": 100,
 
         "days": 30,
 
-        "traffic": "100GB"
+        "price": 600000
 
     },
 
 
-    # نامحدود
-    "plan_unlimited": {
+    "plan_vip": {
 
-        "name": "👑 پلن VIP",
+        "name": "👑 VIP",
 
-        "price": 900000,
+        "traffic": "Unlimited",
+
+        "gb": 0,
 
         "days": 30,
 
-        "traffic": "نامحدود"
+        "price": 900000
 
     },
 
 
-    # حجم دلخواه
     "custom": {
 
         "name": "🛠 حجم دلخواه",
 
-        "price": 0,
+        "traffic": "Custom",
+
+        "gb": 0,
 
         "days": 30,
 
-        "traffic": "Custom"
+        "price": 0
 
     }
 
 }
+
+
+
+# قیمت هر گیگ
+
+PRICE_PER_GB = 6000
